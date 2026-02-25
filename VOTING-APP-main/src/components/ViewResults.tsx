@@ -1,6 +1,19 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { ArrowLeft, Trophy, Users } from 'lucide-react';
+import { ArrowLeft, Trophy, Users, BarChart3, PieChart } from 'lucide-react';
+import {
+  BarChart,
+  Bar,
+  PieChart as RechartsPieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts';
 
 interface Candidate {
   id: string;
@@ -29,6 +42,7 @@ export default function ViewResults({ onBack }: ViewResultsProps) {
   const [polls, setPolls] = useState<Poll[]>([]);
   const [selectedPollId, setSelectedPollId] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
+  const [chartType, setChartType] = useState<'bar' | 'pie'>('bar');
 
   useEffect(() => {
     fetchPolls();
@@ -162,75 +176,146 @@ export default function ViewResults({ onBack }: ViewResultsProps) {
 
               {selectedPoll && selectedPoll.roles.length > 0 ? (
                 <div className="space-y-8">
-                  {selectedPoll.roles.map((role) => (
-                    <div key={role.id} className="border-2 border-gray-200 rounded-xl p-6">
-                      <h2 className="text-2xl font-bold text-gray-800 mb-6">{role.name}</h2>
+                  <div className="flex gap-4 mb-6">
+                    <button
+                      onClick={() => setChartType('bar')}
+                      className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition ${
+                        chartType === 'bar'
+                          ? 'bg-blue-600 text-white shadow-lg'
+                          : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                      }`}
+                    >
+                      <BarChart3 className="w-5 h-5" />
+                      Bar Chart
+                    </button>
+                    <button
+                      onClick={() => setChartType('pie')}
+                      className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition ${
+                        chartType === 'pie'
+                          ? 'bg-blue-600 text-white shadow-lg'
+                          : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                      }`}
+                    >
+                      <PieChart className="w-5 h-5" />
+                      Pie Chart
+                    </button>
+                  </div>
 
-                      <div className="space-y-4">
-                        {role.candidates.map((candidate, index) => {
-                          const isWinner = index === 0 && candidate.vote_count > 0;
-                          const totalVotes = role.candidates.reduce((sum, c) => sum + c.vote_count, 0);
-                          const percentage = totalVotes > 0
-                            ? Math.round((candidate.vote_count / totalVotes) * 100)
-                            : 0;
+                  {chartType === 'bar' && (
+                    <div className="space-y-8">
+                      {selectedPoll.roles.map((role) => {
+                        const chartData = role.candidates.map((candidate) => ({
+                          name: candidate.name,
+                          votes: candidate.vote_count,
+                          image_url: candidate.image_url,
+                        }));
+
+                        const CustomTick = (props: any) => {
+                          const { x, y, payload } = props;
+                          const candidate = chartData.find((d) => d.name === payload.value);
 
                           return (
-                            <div
-                              key={candidate.id}
-                              className={`flex items-center gap-4 p-4 rounded-xl transition ${
-                                isWinner
-                                  ? 'bg-gradient-to-r from-yellow-50 to-amber-50 border-2 border-yellow-400'
-                                  : 'bg-gray-50'
-                              }`}
-                            >
-                              {candidate.image_url && (
-                                <img
-                                  src={candidate.image_url}
-                                  alt={candidate.name}
-                                  className="w-20 h-20 object-cover rounded-lg"
-                                />
-                              )}
-                              <div className="flex-1">
-                                <div className="flex items-center gap-2 mb-2">
-                                  <h3 className="text-lg font-semibold text-gray-800">
-                                    {candidate.name}
-                                  </h3>
-                                  {isWinner && (
-                                    <Trophy className="w-5 h-5 text-yellow-600" />
-                                  )}
-                                </div>
-                                <div className="flex items-center gap-3">
-                                  <div className="flex-1 bg-gray-200 rounded-full h-3 overflow-hidden">
-                                    <div
-                                      className={`h-full transition-all duration-500 ${
-                                        isWinner ? 'bg-yellow-500' : 'bg-blue-500'
-                                      }`}
-                                      style={{ width: `${percentage}%` }}
+                            <g transform={`translate(${x},${y})`}>
+                              <foreignObject x={-50} y={0} width={100} height={120}>
+                                <div className="flex flex-col items-center justify-center h-full">
+                                  {candidate?.image_url && (
+                                    <img
+                                      src={candidate.image_url}
+                                      alt={candidate.name}
+                                      className="w-12 h-12 object-cover rounded-lg mb-1"
                                     />
-                                  </div>
-                                  <div className="flex items-center gap-2 min-w-[100px]">
-                                    <Users className="w-4 h-4 text-gray-600" />
-                                    <span className="font-semibold text-gray-800">
-                                      {candidate.vote_count}
-                                    </span>
-                                    <span className="text-gray-600 text-sm">
-                                      ({percentage}%)
-                                    </span>
-                                  </div>
+                                  )}
+                                  <text
+                                    className="text-xs font-semibold text-gray-800 text-center"
+                                    textAnchor="middle"
+                                    dy={4}
+                                  >
+                                    {payload.value.split(' ').slice(0, 2).join(' ')}
+                                  </text>
                                 </div>
-                              </div>
-                            </div>
+                              </foreignObject>
+                            </g>
                           );
-                        })}
-                      </div>
+                        };
 
-                      <div className="mt-4 pt-4 border-t border-gray-200">
-                        <p className="text-sm text-gray-600">
-                          Total votes: {role.candidates.reduce((sum, c) => sum + c.vote_count, 0)}
-                        </p>
-                      </div>
+                        return (
+                          <div key={role.id} className="border-2 border-gray-200 rounded-xl p-6">
+                            <h2 className="text-2xl font-bold text-gray-800 mb-6">{role.name}</h2>
+                            <div className="h-96 w-full">
+                              <ResponsiveContainer width="100%" height="100%">
+                                <BarChart data={chartData} margin={{ bottom: 120, left: 0, right: 0, top: 0 }}>
+                                  <CartesianGrid strokeDasharray="3 3" />
+                                  <XAxis dataKey="name" tick={<CustomTick />} height={120} />
+                                  <YAxis />
+                                  <Tooltip />
+                                  <Bar dataKey="votes" fill="#2563eb" radius={[8, 8, 0, 0]} />
+                                </BarChart>
+                              </ResponsiveContainer>
+                            </div>
+                            <div className="mt-4 pt-4 border-t border-gray-200">
+                              <p className="text-sm text-gray-600">
+                                Total votes: {role.candidates.reduce((sum, c) => sum + c.vote_count, 0)}
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
-                  ))}
+                  )}
+
+                  {chartType === 'pie' && (
+                    <div className="space-y-8">
+                      {selectedPoll.roles.map((role) => {
+                        const COLORS = [
+                          '#3b82f6',
+                          '#ef4444',
+                          '#10b981',
+                          '#f59e0b',
+                          '#8b5cf6',
+                          '#ec4899',
+                          '#14b8a6',
+                          '#f97316',
+                        ];
+
+                        const chartData = role.candidates.map((candidate) => ({
+                          name: candidate.name,
+                          value: candidate.vote_count,
+                        }));
+
+                        return (
+                          <div key={role.id} className="border-2 border-gray-200 rounded-xl p-6">
+                            <h2 className="text-2xl font-bold text-gray-800 mb-6">{role.name}</h2>
+                            <div className="h-96 w-full flex justify-center">
+                              <ResponsiveContainer width="100%" height="100%">
+                                <RechartsPieChart>
+                                  <Pie
+                                    data={chartData}
+                                    cx="50%"
+                                    cy="50%"
+                                    labelLine={true}
+                                    label={({ name, value }) => `${name}: ${value}`}
+                                    outerRadius={80}
+                                    fill="#8884d8"
+                                    dataKey="value"
+                                  >
+                                    {chartData.map((entry, index) => (
+                                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                    ))}
+                                  </Pie>
+                                  <Tooltip />
+                                </RechartsPieChart>
+                              </ResponsiveContainer>
+                            </div>
+                            <div className="mt-4 pt-4 border-t border-gray-200">
+                              <p className="text-sm text-gray-600">
+                                Total votes: {role.candidates.reduce((sum, c) => sum + c.vote_count, 0)}
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="text-center py-12">
