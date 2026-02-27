@@ -35,7 +35,7 @@ export default function TeacherDashboard() {
         <img src="/images/euroschool-logo.png" alt="EuroSchool North Campus" className="h-16 w-16 object-contain cursor-pointer mb-8" onClick={() => window.location.href = "/"} />
         <div className="flex justify-between items-center mb-12">
           <div>
-            <h1 className="text-4xl font-bold text-gray-800 mb-2">Teacher Dashboard</h1>
+            <h1 className="text-4xl font-bold text-gray-800 mb-2">Administrator Dashboard</h1>
             <p className="text-gray-600">Manage school polls and elections</p>
           </div>
           <button
