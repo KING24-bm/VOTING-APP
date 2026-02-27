@@ -41,7 +41,7 @@ export default function TeacherLogin() {
         </div>
 
         <h1 className="text-3xl font-bold text-center text-gray-800 mb-2">
-          Teacher Login
+          Administrator Login
         </h1>
         <p className="text-center text-gray-600 mb-8">
           Please log in with your username and password to access the dashboard
