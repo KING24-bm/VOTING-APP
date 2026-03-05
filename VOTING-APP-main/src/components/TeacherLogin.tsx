@@ -1,36 +1,37 @@
-import { useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import { LogIn } from 'lucide-react';
+import React, { useState } from "react";
+import { useAuth } from "../contexts/AuthContext";
+import { LogIn } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function TeacherLogin() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [isHuman, setIsHuman] = useState(false);
-  const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuth();
+  const [username, setUsername] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [error, setError] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError('');
+
+    setError("");
     setIsLoading(true);
 
-    if (!username.trim() || !password) {
-      setError('Please enter both username and password');
-      setIsLoading(false);
-      return;
-    }
+    try {
+      if (!username.trim() || !password) {
+        setError("Please enter both username and password");
+        setIsLoading(false);
+        return;
+      }
 
-    if (!isHuman) {
-      setError('Please confirm that you are not a robot');
-      setIsLoading(false);
-      return;
-    }
+      const success = await login(username, password);
 
-    const success = await login(username, password);
-
-    if (!success) {
-      setError('Login failed. Please check your credentials and try again.');
+      if (!success) {
+        setError("Login failed. Please check your credentials and try again.");
+      }
+    } catch (err) {
+      setError("Something went wrong. Please try again.");
     }
 
     setIsLoading(false);
@@ -38,82 +39,78 @@ export default function TeacherLogin() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-      <img src="/images/euroschool-logo.png" alt="EuroSchool North Campus" className="h-16 w-16 object-contain mb-12" onClick={() => window.location.href = "/"}/>
+      <img
+        src="/images/euroschool-logo.png"
+        alt="EuroSchool North Campus"
+        className="h-16 w-16 object-contain mb-12 cursor-pointer"
+        onClick={() => navigate("/")}
+      />
+
       <div className="flex items-center justify-center min-h-[calc(100vh-120px)]">
-      <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">
-        <div className="flex justify-center mb-6">
-          <div className="bg-blue-600 p-4 rounded-full">
-            <LogIn className="w-8 h-8 text-white" />
-          </div>
-        </div>
+        <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">
 
-        <h1 className="text-3xl font-bold text-center text-gray-800 mb-2">
-          Administrator Login
-        </h1>
-        <p className="text-center text-gray-600 mb-8">
-          Please log in with your username and password to access the dashboard
-        </p>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
-              Username
-            </label>
-            <input
-              id="username"
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-              placeholder="Enter your username"
-              disabled={isLoading}
-            />
-          </div>
-
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-              placeholder="Enter your password"
-              disabled={isLoading}
-            />
-          </div>
-
-          <div className="flex items-center">
-            <input
-              id="human-verification"
-              type="checkbox"
-              checked={isHuman}
-              onChange={(e) => setIsHuman(e.target.checked)}
-              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-              disabled={isLoading}
-            />
-            <label htmlFor="human-verification" className="ml-2 block text-sm text-gray-700">
-              I am not a robot
-            </label>
-          </div>
-
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-              {error}
+          <div className="flex justify-center mb-6">
+            <div className="bg-blue-600 p-4 rounded-full">
+              <LogIn className="w-8 h-8 text-white" />
             </div>
-          )}
+          </div>
 
-          <button
-            type="submit"
-            disabled={isLoading || !isHuman}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isLoading ? 'Logging in...' : 'Login'}
-          </button>
-        </form>
-      </div>
+          <h1 className="text-3xl font-bold text-center text-gray-800 mb-2">
+            Administrator Login
+          </h1>
+
+          <p className="text-center text-gray-600 mb-8">
+            Please log in with your username and password to access the dashboard
+          </p>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Username
+              </label>
+
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Enter your username"
+                disabled={isLoading}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Password
+              </label>
+
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password"
+                disabled={isLoading}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+              />
+            </div>
+
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                {error}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isLoading ? "Logging in..." : "Login"}
+            </button>
+
+          </form>
+        </div>
       </div>
     </div>
   );
