@@ -170,7 +170,7 @@ export default function TeacherSignup() {
 
             <p className="text-center text-gray-600 text-sm">
               Already have an account?{' '}
-              <buttonnavigate('/TeacherLogin')
+              <button
                 type="button"
                 onClick={() => window.location.href = '/TeacherLogin'}
                 className="text-green-600 hover:text-green-700 font-semibold"
