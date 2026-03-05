@@ -1,11 +1,9 @@
 import { UserCog, Users } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
-interface HomePageProps {
-  onSelectTeacher: () => void;
-  onSelectStudent: () => void;
-}
+export default function HomePage() {
+  const navigate = useNavigate();
 
-export default function HomePage({ onSelectTeacher, onSelectStudent }: HomePageProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-100 p-4">
       <div className="mb-12">
@@ -23,7 +21,7 @@ export default function HomePage({ onSelectTeacher, onSelectStudent }: HomePageP
 
         <div className="grid md:grid-cols-2 gap-8">
           <button
-            onClick={onSelectTeacher}
+            onClick={() => navigate('/TeacherLanding')}
             className="bg-white rounded-2xl shadow-xl p-12 hover:shadow-2xl transition transform hover:-translate-y-2"
           >
             <div className="flex justify-center mb-6">
@@ -40,7 +38,7 @@ export default function HomePage({ onSelectTeacher, onSelectStudent }: HomePageP
           </button>
 
           <button
-            onClick={onSelectStudent}
+            onClick={() => navigate('/StudentVerification')}
             className="bg-white rounded-2xl shadow-xl p-12 hover:shadow-2xl transition transform hover:-translate-y-2"
           >
             <div className="flex justify-center mb-6">

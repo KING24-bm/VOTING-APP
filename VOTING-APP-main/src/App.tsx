@@ -1,78 +1,75 @@
-import { useState } from 'react';
+import { Suspense, lazy } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-import HomePage from './components/HomePage';
-import TeacherLanding from './components/TeacherLanding';
-import TeacherLogin from './components/TeacherLogin';
-import TeacherDashboard from './components/TeacherDashboard';
-import StudentVoting from './components/StudentVoting';
 
-type View = 'home' | 'teacher-landing' | 'teacher-login' | 'teacher-signup' | 'teacher-dashboard' | 'student-voting';
+// Lazy load pages
+const HomePage = lazy(() => import('./components/HomePage'));
+const TeacherLanding = lazy(() => import('./components/TeacherLanding'));
+const TeacherLogin = lazy(() => import('./components/TeacherLogin'));
+const TeacherSignup = lazy(() => import('./components/TeacherSignup'));
+const TeacherDashboard = lazy(() => import('./components/TeacherDashboard'));
+const StudentVerification = lazy(() => import('./components/StudentVerification'));
+const StudentVoting = lazy(() => import('./components/StudentVoting'));
 
-function AppContent() {
-  const [view, setView] = useState<View>('home');
+// Loading spinner
+const LoadingSpinner = () => (
+  <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+  </div>
+);
+
+// Protected Route for Teacher Dashboard
+function ProtectedTeacherRoute() {
   const { teacherId, isLoading } = useAuth();
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
-  if (teacherId && (view === 'teacher-login' || view === 'teacher-dashboard')) {
-    return <TeacherDashboard />;
+  if (!teacherId) {
+    return <Navigate to="/TeacherLanding" replace />;
   }
 
-  if (view === 'teacher-landing') {
-    return (
-      <TeacherLanding
-        onLogin={() => setView('teacher-login')}
-        onSignup={() => setView('teacher-signup')}
-      />
-    );
-  }
+  return <TeacherDashboard />;
+}
 
-  if (view === 'teacher-login') {
-    return <TeacherLogin />;
-  }
+function AppContent() {
+  const { isLoading } = useAuth();
 
-  if (view === 'teacher-signup') {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4 flex items-center justify-center">
-        <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md text-center">
-          <h1 className="text-3xl font-bold text-gray-800 mb-4">Sign Up</h1>
-          <p className="text-gray-600 mb-6">
-            Please contact your school administrator to create a new account.
-          </p>
-          <button
-            onClick={() => setView('teacher-landing')}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition"
-          >
-            Back to Login
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  if (view === 'student-voting') {
-    return <StudentVoting />;
+  if (isLoading) {
+    return <LoadingSpinner />;
   }
 
   return (
-    <HomePage
-      onSelectTeacher={() => setView('teacher-landing')}
-      onSelectStudent={() => setView('student-voting')}
-    />
+    <Suspense fallback={<LoadingSpinner />}>
+      <Routes>
+        {/* Main landing page */}
+        <Route path="/" element={<HomePage />} />
+
+        {/* Teacher routes */}
+        <Route path="/TeacherLanding" element={<TeacherLanding />} />
+        <Route path="/TeacherLogin" element={<TeacherLogin />} />
+        <Route path="/TeacherSignup" element={<TeacherSignup />} />
+        <Route path="/TeacherDashboard" element={<ProtectedTeacherRoute />} />
+
+        {/* Student routes */}
+        <Route path="/StudentVerification" element={<StudentVerification />} />
+        <Route path="/StudentVoting" element={<StudentVoting />} />
+
+        {/* Catch-all redirect to home */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </Suspense>
   );
 }
 
 function App() {
   return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
+    <Router>
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
+    </Router>
   );
 }
 
