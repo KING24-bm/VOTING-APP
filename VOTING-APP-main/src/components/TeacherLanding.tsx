@@ -13,11 +13,11 @@ export default function TeacherLanding() {
         <div className="max-w-2xl w-full">
 
           <div className="text-center mb-12">
-            <h1 className="text-5xl font-bold text-gray-800 mb-4">
+            <h1 className="text-5xl font-bold text-gray-800 dark:text-gray-100 mb-4">
               Administrator Portal
             </h1>
 
-            <p className="text-xl text-gray-600">
+            <p className="text-xl text-gray-600 dark:text-gray-400">
               Manage your school's voting system
             </p>
           </div>
@@ -28,19 +28,19 @@ export default function TeacherLanding() {
             <button
               type="button"
               onClick={() => navigate("/TeacherLogin")}
-              className="bg-white rounded-2xl shadow-xl p-12 hover:shadow-2xl transition transform hover:-translate-y-2"
+              className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-12 hover:shadow-2xl transition transform hover:-translate-y-2"
             >
               <div className="flex justify-center mb-6">
-                <div className="bg-blue-100 p-6 rounded-full">
-                  <LogIn className="w-16 h-16 text-blue-600" />
+                <div className="bg-blue-100 dark:bg-blue-900 p-6 rounded-full">
+                  <LogIn className="w-16 h-16 text-blue-600 dark:text-blue-400" />
                 </div>
               </div>
 
-              <h2 className="text-3xl font-bold text-gray-800 mb-4 text-center">
+              <h2 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-4 text-center">
                 Login
               </h2>
 
-              <p className="text-gray-600 text-center text-lg">
+              <p className="text-gray-600 dark:text-gray-400 text-center text-lg">
                 Sign in to your existing administrator account
               </p>
             </button>
@@ -49,19 +49,19 @@ export default function TeacherLanding() {
             <button
               type="button"
               onClick={() => navigate("/TeacherSignup")}
-              className="bg-white rounded-2xl shadow-xl p-12 hover:shadow-2xl transition transform hover:-translate-y-2"
+              className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-12 hover:shadow-2xl transition transform hover:-translate-y-2"
             >
               <div className="flex justify-center mb-6">
-                <div className="bg-green-100 p-6 rounded-full">
-                  <UserPlus className="w-16 h-16 text-green-600" />
+                <div className="bg-green-100 dark:bg-green-900 p-6 rounded-full">
+                  <UserPlus className="w-16 h-16 text-green-600 dark:text-green-400" />
                 </div>
               </div>
 
-              <h2 className="text-3xl font-bold text-gray-800 mb-4 text-center">
+              <h2 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-4 text-center">
                 Sign Up
               </h2>
 
-              <p className="text-gray-600 text-center text-lg">
+              <p className="text-gray-600 dark:text-gray-400 text-center text-lg">
                 Create a new administrator account
               </p>
             </button>
