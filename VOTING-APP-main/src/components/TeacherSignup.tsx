@@ -168,7 +168,7 @@ export default function TeacherSignup() {
               Already have an account?{' '}
               <button
                 type="button"
-                onClick={() => window.location.href = '/TeacherLogin'}
+                onClick={() => navigate('/TeacherLogin')}
                 className="text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 font-semibold"
               >
                 Login here

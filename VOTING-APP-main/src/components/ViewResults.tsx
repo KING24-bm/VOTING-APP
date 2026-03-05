@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { Trophy, Users, BarChart3, PieChart } from 'lucide-react';
+import { ArrowLeft, BarChart3, PieChart } from 'lucide-react';
 import Header from './Header';
 import {
   BarChart,
@@ -12,7 +12,6 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
 } from 'recharts';
 
@@ -284,7 +283,7 @@ export default function ViewResults({ onBack }: ViewResultsProps) {
                                     fill="#8884d8"
                                     dataKey="value"
                                   >
-                                    {chartData.map((entry, index) => (
+                                    {chartData.map((_, index) => (
                                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                     ))}
                                   </Pie>
