@@ -1,13 +1,13 @@
 import { UserCog, Users } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import Header from './Header';
 
 export default function HomePage() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-100 p-4">
-      <div className="mb-12">
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-100 dark:from-gray-900 dark:to-gray-800 p-4">
+      <Header />
       <div className="flex items-center justify-center min-h-[calc(100vh-120px)]">
       <div className="max-w-4xl w-full">
         <div className="text-center mb-12">
