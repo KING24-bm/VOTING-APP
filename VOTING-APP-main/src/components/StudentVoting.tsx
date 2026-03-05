@@ -52,7 +52,7 @@ export default function StudentVoting() {
   const [polls, setPolls] = useState<Poll[]>([]);
   const [selectedPollId, setSelectedPollId] = useState<string>('');
   const [voterId, setVoterId] = useState<string>('');
-  const [votes, setVotes] = useState<Record<string, string>>({});
+  const [votes, setVotes] = useState<Record<string, string | null>>({});
   const [submittedRoles, setSubmittedRoles] = useState<Set<string>>(new Set());
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
@@ -192,10 +192,11 @@ export default function StudentVoting() {
       if (error) throw error;
 
       const votedRoles = new Set<string>();
-      const voteMap: Record<string, string> = {};
+      const voteMap: Record<string, string | null> = {};
 
       existingVotes?.forEach((vote) => {
         votedRoles.add(vote.role_id);
+        // candidate_id may be null for NOTA
         voteMap[vote.role_id] = vote.candidate_id;
       });
 
@@ -206,7 +207,7 @@ export default function StudentVoting() {
     }
   };
 
-  const handleVote = (roleId: string, candidateId: string) => {
+  const handleVote = (roleId: string, candidateId: string | null) => {
     if (submittedRoles.has(roleId)) return;
     setVotes({ ...votes, [roleId]: candidateId });
   };
@@ -215,7 +216,7 @@ export default function StudentVoting() {
     setError('');
 
     const candidateId = votes[roleId];
-    if (!candidateId) {
+    if (candidateId === undefined) {
       setError('Please select a candidate before voting');
       return;
     }
@@ -459,13 +460,13 @@ export default function StudentVoting() {
                               disabled={hasVoted}
                               className={`p-4 rounded-xl border-2 transition transform hover:scale-105 ${
                                 isSelected
-                                  ? 'border-green-500 bg-green-50'
+                                  ? 'border-green-500 bg-green-50 dark:bg-green-900 dark:bg-green-900'
                                   : 'border-gray-200 hover:border-green-300'
                               } ${hasVoted ? 'cursor-not-allowed' : 'cursor-pointer'}`}
                             >
                               <div className="flex items-center justify-between">
                                 <div className="flex flex-col">
-                                  <h4 className="text-lg font-semibold text-gray-800">
+                                  <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
                                     {candidate.name}
                                   </h4>
                                   {isSelected && !hasVoted && (
@@ -501,6 +502,30 @@ export default function StudentVoting() {
                             </button>
                           );
                         })}
+                        {/* NOTA option */}
+                        <button
+                          key="nota"
+                          onClick={() => handleVote(role.id, null)}
+                          disabled={hasVoted}
+                          className={`p-4 rounded-xl border-2 transition transform hover:scale-105 ${
+                            selectedCandidate === null
+                              ? 'border-green-500 bg-green-50 dark:bg-green-900'
+                              : 'border-gray-200 hover:border-green-300'
+                          } ${hasVoted ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex flex-col">
+                              <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
+                                None of the Above
+                              </h4>
+                              {selectedCandidate === null && !hasVoted && (
+                                <p className="text-sm text-green-600 font-medium mt-1">
+                                  Selected
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        </button>
                       </div>
 
                       {!hasVoted && (
