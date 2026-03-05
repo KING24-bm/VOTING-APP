@@ -224,6 +224,8 @@ export default function StudentVoting() {
         role_id: roleId,
         candidate_id: candidateId,
         voter_id: voterId,
+        student_id: verifiedStudent?.student_id,
+        class_id: verifiedStudent?.class_id,
       });
 
       if (voteError) {
@@ -233,6 +235,17 @@ export default function StudentVoting() {
           throw voteError;
         }
         return;
+      }
+
+      // Update has_voted to TRUE in students table
+      const { error: updateError } = await supabase
+        .from('students')
+        .update({ has_voted: true })
+        .eq('student_id', verifiedStudent?.student_id);
+
+      if (updateError) {
+        console.error('Error updating has_voted:', updateError);
+        // Note: We don't set error here as the vote was successful
       }
 
       setSubmittedRoles(new Set([...submittedRoles, roleId]));
