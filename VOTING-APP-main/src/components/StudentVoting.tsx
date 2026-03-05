@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { Vote, CheckCircle, User, LogOut } from 'lucide-react';
+import Header from './Header';
 
 interface Candidate {
   id: string;
@@ -286,8 +287,9 @@ export default function StudentVoting() {
 
   if (!isVerified) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
+        <Header />
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 w-full max-w-md">
           <div className="flex justify-center mb-6">
             <div className="bg-blue-600 p-3 rounded-full">
               <User className="w-8 h-8 text-white" />
@@ -357,11 +359,12 @@ export default function StudentVoting() {
     submittedRoles.size === selectedPoll.roles.length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-teal-100 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-teal-100 dark:from-gray-900 dark:to-gray-800 p-4">
+      <Header />
       <div className="container mx-auto max-w-4xl">
         <div className="flex justify-between items-center mb-8">
           <img src="/images/euroschool-logo.png" alt="EuroSchool North Campus" className="h-16 w-16 object-contain cursor-pointer" onClick={() => window.location.href = "/"} />
-          <div className="bg-green-100 text-green-800 px-4 py-2 rounded-lg text-sm font-medium">
+          <div className="bg-green-100 dark:bg-gray-700 text-green-800 dark:text-green-200 px-4 py-2 rounded-lg text-sm font-medium">
             {verifiedStudent?.name}
           </div>
           <button
@@ -395,7 +398,7 @@ export default function StudentVoting() {
         ) : (
           <>
             {polls.length > 1 && (
-              <div className="bg-white rounded-2xl shadow-xl p-6 mb-6">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 mb-6">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Select Poll
                 </label>
@@ -415,7 +418,7 @@ export default function StudentVoting() {
 
             {selectedPoll && (
               <div className="space-y-6">
-                <div className="bg-white rounded-2xl shadow-xl p-6">
+                <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6">
                   <h2 className="text-2xl font-bold text-gray-800 mb-2">
                     {selectedPoll.title}
                   </h2>
@@ -431,7 +434,7 @@ export default function StudentVoting() {
                   return (
                     <div
                       key={role.id}
-                      className={`bg-white rounded-2xl shadow-xl p-6 ${
+                      className={`bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 ${
                         hasVoted ? 'opacity-75' : ''
                       }`}
                     >
